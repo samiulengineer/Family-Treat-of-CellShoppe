@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #090d16;
+    color: #e2e8f0;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.font-tech {
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Workbench cutting mat / blueprint grid */
+.workbench-grid {
+  background-color: #0b0f19;
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(56, 189, 248, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+}
+
+/* Subtle circuit traces */
+.circuit-overlay {
+  background-image: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.12) 0%, transparent 60%);
+}
+
+/* CRT / Glass Screen scanline texture */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Screen boot glow animation */
+@keyframes screenBoot {
+  0% {
+    filter: brightness(0.2) contrast(1.5);
+    opacity: 0.3;
+  }
+  20% {
+    filter: brightness(2.5) contrast(2);
+    opacity: 0.95;
+  }
+  40% {
+    filter: brightness(0.7);
+    opacity: 0.6;
+  }
+  100% {
+    filter: brightness(1) contrast(1);
+    opacity: 1;
+  }
+}
+
+.animate-screen-boot {
+  animation: screenBoot 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Pulse glow for repaired devices */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 15px rgba(6, 182, 212, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.55), inset 0 0 25px rgba(6, 182, 212, 0.3);
+  }
+}
+
+.neon-glow-cyan {
+  animation: neonPulse 3s infinite ease-in-out;
+}
+
+@keyframes neonPulseGreen {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 15px rgba(16, 185, 129, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.55), inset 0 0 25px rgba(16, 185, 129, 0.3);
+  }
+}
+
+.neon-glow-green {
+  animation: neonPulseGreen 3s infinite ease-in-out;
+}

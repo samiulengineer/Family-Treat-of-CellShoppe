@@ -1,0 +1,6 @@
+{
+  "name": "Family Treat of CellShoppe",
+  "description": "Tech & device-repair workbench lottery game with deterministic prize allocation, animated device repair reveal, and group chat sharing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
