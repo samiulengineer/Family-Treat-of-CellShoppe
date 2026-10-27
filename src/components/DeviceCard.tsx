@@ -8,7 +8,9 @@ import {
   CheckCircle2, 
   AlertTriangle,
   Zap,
-  Cpu
+  Cpu,
+  Wrench,
+  Maximize2
 } from 'lucide-react';
 import { AssignedDevice, DeviceCategory } from '../utils/codec';
 
@@ -18,6 +20,8 @@ interface DeviceCardProps {
   isRevealing: boolean;
   isRevealed: boolean;
   onInspect: (device: AssignedDevice) => void;
+  onStartIndividualRepair?: (device: AssignedDevice) => void;
+  onViewFullScreen?: (device: AssignedDevice) => void;
 }
 
 export const DeviceCard: React.FC<DeviceCardProps> = ({
@@ -26,10 +30,9 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
   isRevealing,
   isRevealed,
   onInspect,
+  onStartIndividualRepair,
+  onViewFullScreen,
 }) => {
-  // Stagger animation timing based on index
-  const animationDelayMs = index * 220;
-
   const renderDeviceIcon = (category: DeviceCategory) => {
     switch (category) {
       case 'smartphone':
@@ -52,9 +55,6 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           ? 'bg-slate-900/80 border-amber-500/60 shadow-lg shadow-amber-950/30'
           : 'bg-[#101624] border-slate-800 hover:border-slate-700 hover:shadow-md'
       }`}
-      style={{
-        transitionDelay: `${isRevealing ? animationDelayMs : 0}ms`,
-      }}
     >
       {/* Corner Hex Bolts & PCB Accents */}
       <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-slate-700/60 border border-slate-600/50" />
@@ -87,7 +87,16 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
       </div>
 
       {/* Device Hardware Bezel / Enclosure */}
-      <div className="relative rounded-xl overflow-hidden bg-black p-2 border border-slate-800 shadow-inner">
+      <div 
+        onClick={() => {
+          if (!isRevealed && onStartIndividualRepair) {
+            onStartIndividualRepair(device);
+          } else if (isRevealed && onViewFullScreen) {
+            onViewFullScreen(device);
+          }
+        }}
+        className={`relative rounded-xl overflow-hidden bg-black p-2 border border-slate-800 shadow-inner cursor-pointer transition-transform group-hover:scale-[1.01]`}
+      >
         {/* Speaker notch / Camera punch-hole simulation */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 opacity-70">
           <div className="w-1.5 h-1.5 rounded-full bg-slate-900 border border-slate-700" />
@@ -106,7 +115,7 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
         >
           {/* Unrevealed: Broken / Powered-Off Screen */}
           {!isRevealed && !isRevealing && (
-            <div className="relative z-10 flex flex-col items-center justify-center text-center h-full my-auto py-4">
+            <div className="relative z-10 flex flex-col items-center justify-center text-center h-full my-auto py-3">
               {/* Shattered Glass SVG Overlay */}
               <svg 
                 className="absolute inset-0 w-full h-full pointer-events-none opacity-45 stroke-cyan-500/40 fill-none" 
@@ -118,15 +127,16 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
                 <path d="M 85 70 L 95 90 L 80 110" strokeWidth="0.8" />
               </svg>
 
-              <div className="w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700/80 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-slate-900/80 border border-slate-700/80 flex items-center justify-center mb-2">
                 <AlertTriangle className="w-5 h-5 text-amber-500/80" />
               </div>
 
-              <div className="text-xs font-mono-code text-slate-400 tracking-wider uppercase mb-1">
+              <div className="text-xs font-mono-code text-slate-300 tracking-wider uppercase mb-1">
                 Display Damaged
               </div>
-              <div className="text-[11px] text-slate-500">
-                Awaiting Diagnostic Power-On
+              <div className="text-[11px] text-cyan-400/80 flex items-center gap-1 mt-1">
+                <Wrench className="w-3 h-3" />
+                Click to Repair with Technician
               </div>
             </div>
           )}
@@ -171,8 +181,8 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
               </div>
 
               {/* Screen Footer */}
-              <div className="text-center pt-2 border-t border-cyan-900/40 text-[10px] font-mono-code text-slate-400">
-                CellShoppe Diagnostics · Verified
+              <div className="text-center pt-2 border-t border-cyan-900/40 text-[10px] font-mono-code text-slate-400 flex items-center justify-center gap-1">
+                <Maximize2 className="w-3 h-3" /> Click to view full screen
               </div>
             </div>
           )}
@@ -182,8 +192,8 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
         <div className="w-16 h-1 rounded-full bg-slate-700/60 mx-auto mt-2" />
       </div>
 
-      {/* Device Assignment Label (Family Member's Name) */}
-      <div className="mt-3.5 pt-2 border-t border-slate-800/80 flex items-center justify-between">
+      {/* Device Assignment Label (Family Member's Name) & Action Button */}
+      <div className="mt-3.5 pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
         <div>
           <div className="text-[10px] uppercase font-mono-code text-slate-400 tracking-wider">
             Device Assigned To
@@ -193,16 +203,33 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           </div>
         </div>
 
-        {/* Action / Inspect Voucher button */}
-        {isRevealed && (
+        {/* Action Button: Individual Repair (30s) or Full Screen Prize */}
+        {!isRevealed ? (
           <button
-            onClick={() => onInspect(device)}
-            className="px-2.5 py-1 text-xs font-mono-code text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-700/60 rounded-lg transition-colors flex items-center gap-1"
-            title="Inspect Voucher & Specs"
+            onClick={() => onStartIndividualRepair && onStartIndividualRepair(device)}
+            className="px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-tech font-bold text-xs rounded-xl shadow-[0_0_12px_rgba(6,182,212,0.3)] transition-all flex items-center gap-1 shrink-0 active:scale-95 cursor-pointer"
           >
-            <Cpu className="w-3 h-3" />
-            Inspect
+            <Wrench className="w-3.5 h-3.5" />
+            Repair Screen
           </button>
+        ) : (
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => onViewFullScreen && onViewFullScreen(device)}
+              className="px-2.5 py-1 text-xs font-mono-code text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-700/60 rounded-lg transition-colors flex items-center gap-1"
+              title="View Full Screen Prize Reveal"
+            >
+              <Maximize2 className="w-3 h-3" />
+              Full Screen
+            </button>
+            <button
+              onClick={() => onInspect(device)}
+              className="p-1 text-slate-400 hover:text-cyan-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg transition-colors"
+              title="Inspect Specs"
+            >
+              <Cpu className="w-3.5 h-3.5" />
+            </button>
+          </div>
         )}
       </div>
     </div>

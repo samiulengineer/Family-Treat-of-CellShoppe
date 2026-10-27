@@ -64,7 +64,7 @@ export function playBeep(): void {
   osc.type = 'sine';
   osc.frequency.setValueAtTime(880, now);
 
-  gain.gain.setValueAtTime(0.1, now);
+  gain.gain.setValueAtTime(0.08, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
   osc.connect(gain);
@@ -72,6 +72,50 @@ export function playBeep(): void {
 
   osc.start(now);
   osc.stop(now + 0.08);
+}
+
+export function playSolderSpark(): void {
+  if (isMuted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(180, now);
+  osc.frequency.exponentialRampToValueAtTime(820, now + 0.06);
+
+  gain.gain.setValueAtTime(0.06, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.07);
+}
+
+export function playLaserPulse(): void {
+  if (isMuted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1200, now);
+  osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+
+  gain.gain.setValueAtTime(0.07, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.16);
 }
 
 export function playPowerOnSurge(): void {
@@ -88,7 +132,7 @@ export function playPowerOnSurge(): void {
   hum.frequency.setValueAtTime(60, now);
   hum.frequency.exponentialRampToValueAtTime(220, now + 0.6);
 
-  humGain.gain.setValueAtTime(0.15, now);
+  humGain.gain.setValueAtTime(0.12, now);
   humGain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
 
   hum.connect(humGain);
@@ -117,24 +161,24 @@ export function playRepairTriumph(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
+  const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51]; // A major triumphant chord
   const now = ctx.currentTime;
 
   notes.forEach((freq, idx) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    const startTime = now + idx * 0.09;
+    const startTime = now + idx * 0.1;
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, startTime);
 
-    gain.gain.setValueAtTime(0.14, startTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
+    gain.gain.setValueAtTime(0.15, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(startTime);
-    osc.stop(startTime + 0.45);
+    osc.stop(startTime + 0.65);
   });
 }
